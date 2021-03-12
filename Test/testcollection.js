@@ -26,9 +26,9 @@ describe('Register, Login and Call Test Collection with Basic Auth and JWT Auth'
         User.deleteOne({ name: 'test'}, function(err, user) {
             if (err) throw err;
         });
-        done();//
+        done();
     })
-//
+
     //Test the GET route
     describe('/signup', () => {
         it('it should register, login and check our token', (done) => {
@@ -38,7 +38,7 @@ describe('Register, Login and Call Test Collection with Basic Auth and JWT Auth'
                 .end((err, res) =>{
                     console.log(JSON.stringify(res.body));
                     res.should.have.status(200);
-                    res.body.success.should.be.true;
+                    res.body.success.should.be.eql(true);
                     //follow-up to get the JWT token
                     chai.request(server)
                         .post('/signin')
