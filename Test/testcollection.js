@@ -1,57 +1,72 @@
+//Require the dev-dependencies
 let envPath = __dirname + "/../.env"
-require('dotenv').config({path:envPath});
+require('dotenv').config({path:envPath})
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('../server');
-let User = require('../Users');
-chai.should();
+var User = require('../Users');
+let should = chai.should();
 
 chai.use(chaiHttp);
 
+
 let login_details = {
-    name: 'test',
-    username: 'email@email.com',
-    password: '123@abc'
+    'name': 'test',
+    'username': 'email@email.com',
+    'password': '123@abc'
 }
 
-describe('Register, Login and Call Test Collection with Basic Auth and JWT Auth', () => {
-    beforeEach((done) => { //Before each test initialize the database to empty
-        //db.userList = [];
-
+//Our parent block
+describe('Register, Login and check token', () => {
+    beforeEach((done) => { //Before each test we empty the database
+        //User.remove({ name: 'test' }, function(err, user) {
+        //    if (err) throw err;
+        //});
         done();
-    })
+    });
 
-    after((done) => { //after this test suite empty the database
-        //db.userList = [];
-        User.deleteOne({ name: 'test'}, function(err, user) {
+    after((done) => { //Before each test we empty the database
+        User.deleteOne({ name: 'test' }, function(err, user) {
             if (err) throw err;
         });
         done();
-    })
-
-    //Test the GET route
-    describe('/signup', () => {
-        it('it should register, login and check our token', (done) => {
+    });
+    /*
+      * Test the /GET route
+      */
+    describe('/signup ', () => {
+        it('it should Register, Login, and check token', (done) => {
             chai.request(server)
                 .post('/signup')
                 .send(login_details)
-                .end((err, res) =>{
-                    console.log(JSON.stringify(res.body));
+                .end((err, res) => {
                     res.should.have.status(200);
                     res.body.success.should.be.eql(true);
-                    //follow-up to get the JWT token
+                    console.log('signup')
+                    // follow up with login
                     chai.request(server)
                         .post('/signin')
                         .send(login_details)
                         .end((err, res) => {
+                            console.log('this was run the login part');
                             res.should.have.status(200);
                             res.body.should.have.property('token');
+
                             let token = res.body.token;
                             console.log(token);
-                            done();
-                        })
-                })
-        })
+                            // follow up with requesting user protected page
+                            chai.request(server)
+                                .post('/postjwt')
+                                // we set the auth header with our token
+                                .set('Authorization', token)
+                                .send({ echo: '' })
+                                .end((err, res) => {
+                                    res.should.have.status(200);
+                                    res.body.should.have.property('echo');
+                                    done(); // Don't forget the done callback to indicate we're done!
+                                })
+                        });
+                });
+        });
     });
-
 });

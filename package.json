@@ -4,7 +4,7 @@
   "description": "Web API 3916 Homework 2",
   "main": "server.js",
   "scripts": {
-    "test": "mocha  --timeout 20000"
+    "test": "mocha  --timeout 30000"
   },
   "repository": {
     "type": "git",
