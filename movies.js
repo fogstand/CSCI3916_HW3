@@ -1,3 +1,5 @@
+let envPath = __dirname + "/../.env"
+require('dotenv').config({path:envPath});
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
@@ -11,7 +13,7 @@ try {
 }
 mongoose.set('useCreateIndex', true);
 
-var moviesSchema = new Schema({
+var MovieSchema = new Schema({
     title:{type:String,required:true,index:{unique:true}},
     yearReleased:{type:Date, required:true},
     genre:{type:String,required:true,enum:['Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Mystery', 'Thriller', 'Western'] },
